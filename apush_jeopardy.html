@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ms. Murphy APUSH — Jeopardy!</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Georgia,serif;background:#060CE9;color:#fff;min-height:100vh;padding:16px}
+  h1{text-align:center;font-size:28px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;color:#FFD700;text-shadow:2px 2px 0 #000}
+  .subtitle{text-align:center;font-size:13px;color:#aac8ff;margin-bottom:16px;letter-spacing:1px}
+
+  /* Score bar */
+  .score-bar{display:flex;justify-content:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .score-card{background:#0a1fa8;border:2px solid #FFD700;border-radius:8px;padding:8px 14px;text-align:center;min-width:100px}
+  .score-name{font-size:12px;color:#aac8ff;margin-bottom:2px;font-family:Arial,sans-serif}
+  .score-val{font-size:22px;font-weight:700;color:#FFD700;font-family:Arial,sans-serif}
+  .score-btns{display:flex;gap:4px;margin-top:5px;justify-content:center}
+  .score-btns button{font-size:11px;padding:3px 7px;border:1px solid #FFD700;background:transparent;border-radius:4px;cursor:pointer;color:#FFD700;font-family:Arial,sans-serif}
+  .score-btns button:hover{background:#FFD700;color:#000}
+
+  /* Board */
+  .board{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:900px;margin:0 auto 16px}
+  .cat-header{background:#0a1fa8;border:2px solid #FFD700;border-radius:6px;padding:10px 6px;text-align:center;font-size:13px;font-weight:700;text-transform:uppercase;line-height:1.3;min-height:60px;display:flex;align-items:center;justify-content:center;color:#FFD700;letter-spacing:.5px}
+  .cell{background:#0a1fa8;border:2px solid #5577ee;border-radius:6px;padding:8px 4px;text-align:center;font-size:22px;font-weight:700;cursor:pointer;min-height:60px;display:flex;align-items:center;justify-content:center;color:#FFD700;transition:background .15s,transform .1s;font-family:Arial,sans-serif}
+  .cell:hover{background:#1a3aff;transform:scale(1.03)}
+  .cell.used{background:#04086b;border-color:#1a2577;color:transparent;cursor:default;pointer-events:none}
+  .cell.daily-double{background:#7a3800;border-color:#FFD700;color:#FFD700}
+  .cell.daily-double:hover{background:#a85000}
+
+  /* Modal overlay */
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:center;justify-content:center;padding:20px}
+  .overlay.show{display:flex}
+  .modal{background:#0a1fa8;border:3px solid #FFD700;border-radius:12px;padding:28px;max-width:580px;width:100%;position:relative;animation:popIn .2s ease}
+  @keyframes popIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+  .modal-cat{font-size:12px;font-weight:700;color:#aac8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;font-family:Arial,sans-serif}
+  .modal-pts{font-size:15px;color:#FFD700;margin-bottom:14px;font-weight:700;font-family:Arial,sans-serif}
+  .dd-banner{background:#7a3800;border:1px solid #FFD700;border-radius:6px;padding:8px 12px;font-size:13px;color:#FFD700;margin-bottom:12px;font-family:Arial,sans-serif}
+  .modal-q{font-size:20px;font-weight:700;color:#fff;line-height:1.5;margin-bottom:18px;text-align:center;font-family:Georgia,serif}
+  .modal-ans{display:none;background:#003300;border:2px solid #00aa44;border-radius:8px;padding:12px 16px;font-size:15px;color:#66ff88;margin-bottom:16px;font-weight:700;font-family:Arial,sans-serif;text-align:center}
+  .modal-ans.show{display:block}
+  .btn-section{margin-bottom:10px}
+  .btn-section-label{font-size:11px;color:#aac8ff;margin-bottom:5px;font-family:Arial,sans-serif;text-transform:uppercase;letter-spacing:.05em}
+  .btn-row{display:flex;gap:6px;flex-wrap:wrap}
+  .btn-row button{padding:7px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;font-family:Arial,sans-serif;transition:background .1s}
+  .btn-reveal{border:2px solid #FFD700;background:transparent;color:#FFD700}
+  .btn-reveal:hover{background:#FFD700;color:#000}
+  .btn-correct{border:2px solid #00aa44;background:transparent;color:#66ff88}
+  .btn-correct:hover{background:#00aa44;color:#fff}
+  .btn-wrong{border:2px solid #cc2222;background:transparent;color:#ff7777}
+  .btn-wrong:hover{background:#cc2222;color:#fff}
+  .btn-close{border:2px solid #5577ee;background:transparent;color:#aac8ff}
+  .btn-close:hover{background:#5577ee;color:#fff}
+
+  /* Team name editing */
+  .score-name-input{font-size:12px;color:#FFD700;background:transparent;border:none;border-bottom:1px solid #FFD700;text-align:center;width:80px;outline:none;font-family:Arial,sans-serif;cursor:pointer}
+
+  /* Final screen */
+  #final-screen{display:none;text-align:center;padding:2rem;max-width:600px;margin:0 auto}
+  #final-screen h2{font-size:32px;font-weight:700;color:#FFD700;margin-bottom:.5rem;text-shadow:2px 2px 0 #000}
+  .winner-name{font-size:36px;font-weight:700;color:#fff;margin-bottom:.25rem;text-shadow:2px 2px 0 #000}
+  .final-scores{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:1.5rem 0}
+  .final-sc{background:#0a1fa8;border:2px solid #FFD700;border-radius:8px;padding:12px 20px;text-align:center}
+  .reset-btn{padding:10px 24px;border-radius:8px;border:2px solid #FFD700;background:transparent;cursor:pointer;font-size:15px;color:#FFD700;font-weight:700;font-family:Arial,sans-serif}
+  .reset-btn:hover{background:#FFD700;color:#000}
+</style>
+</head>
+<body>
+
+<p style="text-align:center;font-size:13px;color:#aac8ff;letter-spacing:2px;text-transform:uppercase;font-family:Arial,sans-serif;margin-bottom:2px">Ms. Murphy · APUSH</p>
+<h1>Jeopardy!</h1>
+<p class="subtitle">Chapter 32A — The New Left, Counterculture &amp; Civil Rights Movements</p>
+
+<div class="score-bar" id="score-bar"></div>
+
+<div id="main">
+  <div class="board" id="board"></div>
+</div>
+
+<div id="final-screen">
+  <h2>Game Over!</h2>
+  <div class="winner-name" id="winner-name"></div>
+  <div style="font-size:16px;color:#aac8ff;margin-bottom:.5rem;font-family:Arial,sans-serif">wins!</div>
+  <div class="final-scores" id="final-scores"></div>
+  <button class="reset-btn" onclick="resetGame()">Play Again</button>
+</div>
+
+<!-- Modal -->
+<div class="overlay" id="overlay">
+  <div class="modal" id="modal">
+    <div class="modal-cat" id="m-cat"></div>
+    <div class="modal-pts" id="m-pts"></div>
+    <div class="dd-banner" id="m-dd" style="display:none">Daily Double! Teams agree on a wager before the question is revealed.</div>
+    <div class="modal-q" id="m-q"></div>
+    <div class="modal-ans" id="m-ans"></div>
+    <div class="btn-section">
+      <div class="btn-section-label">Controls</div>
+      <div class="btn-row">
+        <button class="btn-reveal" onclick="revealAns()">Reveal Answer</button>
+        <button class="btn-close" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+    <div class="btn-section" id="award-section"></div>
+  </div>
+</div>
+
+<script>
+const TEAM_NAMES = ["Team 1","Team 2","Team 3","Team 4"];
+const scores = {};
+const used = new Set();
+TEAM_NAMES.forEach(t => scores[t] = 0);
+
+const DATA = [
+  {
+    cat:"The New Left",
+    qs:[
+      {q:"This 1962 manifesto written by SDS called for 'participatory democracy' and became the founding document of the New Left.",a:"The Port Huron Statement",pts:100},
+      {q:"This organization, founded in 1960, became the primary student organization of the New Left.",a:"Students for a Democratic Society (SDS)",pts:200},
+      {q:"This 1964 movement at UC Berkeley, sparked by a ban on political activity on campus, became a symbol of student protest.",a:"The Free Speech Movement",pts:300},
+      {q:"The New Left criticized this term — referring to the bland conformity, consumer culture, and Cold War consensus of 1950s American life.",a:"The Establishment",pts:400},
+      {q:"At this 1968 event, clashes between police and anti-war demonstrators were broadcast live on television, shocking the nation.",a:"The Democratic National Convention in Chicago",pts:500}
+    ]
+  },
+  {
+    cat:"Counterculture",
+    qs:[
+      {q:"Members of this counterculture subgroup rejected materialism, embraced communal living, and were known as 'flower children.'",a:"Hippies",pts:100},
+      {q:"This massive 1969 music festival in upstate New York became the defining cultural event of the counterculture generation.",a:"Woodstock",pts:200},
+      {q:"This author of 'One Flew Over the Cuckoo's Nest' and his traveling companions popularized LSD across the country in the early 1960s.",a:"Ken Kesey (and the Merry Pranksters)",pts:300},
+      {q:"Name the San Francisco neighborhood that became the capital of hippie culture and the 'Summer of Love' in 1967.",a:"Haight-Ashbury",pts:400},
+      {q:"This Harvard professor, fired for drug experiments, urged the counterculture to 'turn on, tune in, drop out.'",a:"Timothy Leary",pts:500}
+    ]
+  },
+  {
+    cat:"New Feminism",
+    qs:[
+      {q:"Betty Friedan's 1963 book described the 'problem that has no name' — the dissatisfaction felt by educated suburban housewives.",a:"The Feminine Mystique",pts:100},
+      {q:"Founded in 1966 by Betty Friedan and others, this became the leading mainstream women's rights organization of the era.",a:"NOW — National Organization for Women",pts:200},
+      {q:"This 1972 law banned sex discrimination in any federally funded education program, transforming women's college athletics.",a:"Title IX",pts:300},
+      {q:"This proposed constitutional amendment, which passed Congress in 1972 but was never ratified by enough states, would have guaranteed equal rights regardless of sex.",a:"The Equal Rights Amendment (ERA)",pts:400},
+      {q:"This feminist author and activist co-founded Ms. Magazine in 1972 and became one of the most prominent faces of the women's liberation movement.",a:"Gloria Steinem",pts:500}
+    ]
+  },
+  {
+    cat:"Other Civil Rights",
+    qs:[
+      {q:"This 1969 event in New York City — in which patrons of a gay bar fought back against a police raid — is considered the birth of the modern LGBTQ+ rights movement.",a:"The Stonewall Riots",pts:100},
+      {q:"César Chávez co-founded this union to fight for the rights of migrant farmworkers in California.",a:"United Farm Workers (UFW)",pts:200},
+      {q:"In 1973, members of the American Indian Movement occupied this South Dakota town for 71 days to protest broken treaties and federal policy.",a:"Wounded Knee",pts:300},
+      {q:"This Latinx civil rights term, meaning 'the race' or 'the people,' became a rallying cry for Mexican-American identity and political pride in the 1960s–70s.",a:"La Raza",pts:400},
+      {q:"This militant Native American organization, founded in 1968, led protests at Alcatraz Island and Wounded Knee to draw attention to treaty violations.",a:"AIM — American Indian Movement",pts:500}
+    ]
+  },
+  {
+    cat:"Key Terms",
+    qs:[
+      {q:"This broad term describes the wave of activism in the 1960s–70s in which women, Native Americans, LGBTQ+ people, and Latinx Americans simultaneously fought for equal rights.",a:"The rights revolution (or social movements of the 1960s–70s)",pts:100},
+      {q:"This landmark 1973 Supreme Court decision established a woman's constitutional right to an abortion.",a:"Roe v. Wade",pts:200},
+      {q:"This feminist concept distinguishes the second wave of feminism — focused on full social, economic, and legal equality — from the earlier suffragist movement.",a:"New Feminism (second-wave feminism)",pts:300},
+      {q:"DAILY DOUBLE — This Chicano student organization, founded in 1967, pushed for educational reform, cultural pride, and political power for Mexican-Americans.",a:"MEChA (Movimiento Estudiantil Chicano de Aztlán)",pts:400,dd:true},
+      {q:"This Supreme Court ruling, combined with the women's movement, dramatically changed American society — but also sparked a conservative backlash that energized the New Right.",a:"Roe v. Wade (accept: any ruling that sparked conservative backlash, e.g. ERA debate)",pts:500}
+    ]
+  }
+];
+
+let currentPts = 0;
+
+function renderScores(){
+  const el = document.getElementById('score-bar');
+  el.innerHTML = TEAM_NAMES.map(t=>`
+    <div class="score-card">
+      <input class="score-name-input" value="${t}" onchange="renameTeam('${t}',this.value)" title="Click to rename team">
+      <div class="score-val" id="sv-${t.replace(/\s/g,'_')}">${scores[t].toLocaleString()}</div>
+      <div class="score-btns">
+        <button onclick="adj('${t}',100)">+100</button>
+        <button onclick="adj('${t}',-100)">-100</button>
+      </div>
+    </div>`).join('');
+}
+
+function renameTeam(old, nw){
+  const val = scores[old];
+  delete scores[old];
+  const idx = TEAM_NAMES.indexOf(old);
+  TEAM_NAMES[idx] = nw;
+  scores[nw] = val;
+  renderScores();
+  renderBoard();
+}
+
+function adj(team, amt){
+  scores[team] = Math.max(-99999, scores[team] + amt);
+  const el = document.getElementById('sv-'+team.replace(/\s/g,'_'));
+  if(el) el.textContent = scores[team].toLocaleString();
+}
+
+function renderBoard(){
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  DATA.forEach(col=>{
+    const h = document.createElement('div');
+    h.className='cat-header';
+    h.textContent=col.cat;
+    board.appendChild(h);
+  });
+  for(let r=0;r<5;r++){
+    DATA.forEach((col,c)=>{
+      const q=col.qs[r];
+      const key=`${c}-${r}`;
+      const cell=document.createElement('div');
+      if(used.has(key)){
+        cell.className='cell used';
+        cell.textContent='';
+      } else {
+        cell.className='cell'+(q.dd?' daily-double':'');
+        cell.textContent='$'+q.pts;
+        cell.onclick=()=>openQ(c,r,key,q,col.cat);
+      }
+      board.appendChild(cell);
+    });
+  }
+}
+
+function openQ(c,r,key,q,cat){
+  used.add(key);
+  renderBoard();
+  currentPts = q.pts;
+  document.getElementById('m-cat').textContent = cat;
+  document.getElementById('m-pts').textContent = q.dd ? 'Daily Double — wager first!' : '$'+q.pts;
+  document.getElementById('m-dd').style.display = q.dd ? 'block' : 'none';
+  document.getElementById('m-q').textContent = q.q;
+  document.getElementById('m-ans').textContent = 'Answer: '+q.a;
+  document.getElementById('m-ans').classList.remove('show');
+
+  const as = document.getElementById('award-section');
+  as.innerHTML = `
+    <div class="btn-section-label">Award / Deduct Points</div>
+    <div class="btn-row" style="margin-bottom:6px">
+      ${TEAM_NAMES.map(t=>`<button class="btn-correct" onclick="award('${t}',true)">+$${q.pts} ${t}</button>`).join('')}
+    </div>
+    <div class="btn-row">
+      ${TEAM_NAMES.map(t=>`<button class="btn-wrong" onclick="award('${t}',false)">-$${q.pts} ${t}</button>`).join('')}
+    </div>`;
+
+  document.getElementById('overlay').classList.add('show');
+}
+
+function revealAns(){
+  document.getElementById('m-ans').classList.add('show');
+}
+
+function award(team, correct){
+  scores[team] = Math.max(-99999, scores[team]+(correct?currentPts:-currentPts));
+  const el = document.getElementById('sv-'+team.replace(/\s/g,'_'));
+  if(el) el.textContent = scores[team].toLocaleString();
+}
+
+function closeModal(){
+  document.getElementById('overlay').classList.remove('show');
+  if(used.size===25) showFinal();
+}
+
+function showFinal(){
+  document.getElementById('board').style.display='none';
+  document.getElementById('final-screen').style.display='block';
+  const winner = TEAM_NAMES.reduce((a,b)=>scores[a]>=scores[b]?a:b);
+  document.getElementById('winner-name').textContent = winner;
+  document.getElementById('final-scores').innerHTML = TEAM_NAMES.map(t=>`
+    <div class="final-sc">
+      <div style="font-size:13px;color:#aac8ff;margin-bottom:4px;font-family:Arial,sans-serif">${t}</div>
+      <div style="font-size:20px;font-weight:700;color:#FFD700;font-family:Arial,sans-serif">$${scores[t].toLocaleString()}</div>
+    </div>`).join('');
+}
+
+function resetGame(){
+  TEAM_NAMES.forEach(t=>scores[t]=0);
+  used.clear();
+  document.getElementById('board').style.display='grid';
+  document.getElementById('final-screen').style.display='none';
+  renderScores();
+  renderBoard();
+}
+
+renderScores();
+renderBoard();
+</script>
+</body>
+</html>
