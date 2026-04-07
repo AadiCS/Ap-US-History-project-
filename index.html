@@ -9,26 +9,19 @@
   body{font-family:Georgia,serif;background:#060CE9;color:#fff;min-height:100vh;padding:16px}
   h1{text-align:center;font-size:28px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;color:#FFD700;text-shadow:2px 2px 0 #000}
   .subtitle{text-align:center;font-size:13px;color:#aac8ff;margin-bottom:16px;letter-spacing:1px}
-
-  /* Score bar */
   .score-bar{display:flex;justify-content:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
   .score-card{background:#0a1fa8;border:2px solid #FFD700;border-radius:8px;padding:8px 14px;text-align:center;min-width:100px}
-  .score-name{font-size:12px;color:#aac8ff;margin-bottom:2px;font-family:Arial,sans-serif}
   .score-val{font-size:22px;font-weight:700;color:#FFD700;font-family:Arial,sans-serif}
   .score-btns{display:flex;gap:4px;margin-top:5px;justify-content:center}
   .score-btns button{font-size:11px;padding:3px 7px;border:1px solid #FFD700;background:transparent;border-radius:4px;cursor:pointer;color:#FFD700;font-family:Arial,sans-serif}
   .score-btns button:hover{background:#FFD700;color:#000}
-
-  /* Board */
-  .board{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;max-width:900px;margin:0 auto 16px}
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:900px;margin:0 auto 16px}
   .cat-header{background:#0a1fa8;border:2px solid #FFD700;border-radius:6px;padding:10px 6px;text-align:center;font-size:13px;font-weight:700;text-transform:uppercase;line-height:1.3;min-height:60px;display:flex;align-items:center;justify-content:center;color:#FFD700;letter-spacing:.5px}
   .cell{background:#0a1fa8;border:2px solid #5577ee;border-radius:6px;padding:8px 4px;text-align:center;font-size:22px;font-weight:700;cursor:pointer;min-height:60px;display:flex;align-items:center;justify-content:center;color:#FFD700;transition:background .15s,transform .1s;font-family:Arial,sans-serif}
   .cell:hover{background:#1a3aff;transform:scale(1.03)}
   .cell.used{background:#04086b;border-color:#1a2577;color:transparent;cursor:default;pointer-events:none}
   .cell.daily-double{background:#7a3800;border-color:#FFD700;color:#FFD700}
   .cell.daily-double:hover{background:#a85000}
-
-  /* Modal overlay */
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:center;justify-content:center;padding:20px}
   .overlay.show{display:flex}
   .modal{background:#0a1fa8;border:3px solid #FFD700;border-radius:12px;padding:28px;max-width:580px;width:100%;position:relative;animation:popIn .2s ease}
@@ -51,11 +44,7 @@
   .btn-wrong:hover{background:#cc2222;color:#fff}
   .btn-close{border:2px solid #5577ee;background:transparent;color:#aac8ff}
   .btn-close:hover{background:#5577ee;color:#fff}
-
-  /* Team name editing */
   .score-name-input{font-size:12px;color:#FFD700;background:transparent;border:none;border-bottom:1px solid #FFD700;text-align:center;width:80px;outline:none;font-family:Arial,sans-serif;cursor:pointer}
-
-  /* Final screen */
   #final-screen{display:none;text-align:center;padding:2rem;max-width:600px;margin:0 auto}
   #final-screen h2{font-size:32px;font-weight:700;color:#FFD700;margin-bottom:.5rem;text-shadow:2px 2px 0 #000}
   .winner-name{font-size:36px;font-weight:700;color:#fff;margin-bottom:.25rem;text-shadow:2px 2px 0 #000}
@@ -72,10 +61,7 @@
 <p class="subtitle">Chapter 32A — The New Left, Counterculture &amp; Civil Rights Movements</p>
 
 <div class="score-bar" id="score-bar"></div>
-
-<div id="main">
-  <div class="board" id="board"></div>
-</div>
+<div id="main"><div class="board" id="board"></div></div>
 
 <div id="final-screen">
   <h2>Game Over!</h2>
@@ -85,7 +71,6 @@
   <button class="reset-btn" onclick="resetGame()">Play Again</button>
 </div>
 
-<!-- Modal -->
 <div class="overlay" id="overlay">
   <div class="modal" id="modal">
     <div class="modal-cat" id="m-cat"></div>
@@ -105,60 +90,50 @@
 </div>
 
 <script>
-const TEAM_NAMES = ["Team 1","Team 2","Team 3","Team 4"];
+const TEAM_NAMES = ["Team 1","Team 2","Team 3","Team 4","Team 5"];
 const scores = {};
 const used = new Set();
 TEAM_NAMES.forEach(t => scores[t] = 0);
 
 const DATA = [
   {
-    cat:"The New Left",
-    qs:[
-      {q:"This 1962 manifesto written by SDS called for 'participatory democracy' and became the founding document of the New Left.",a:"The Port Huron Statement",pts:100},
-      {q:"This organization, founded in 1960, became the primary student organization of the New Left.",a:"Students for a Democratic Society (SDS)",pts:200},
-      {q:"This 1964 movement at UC Berkeley, sparked by a ban on political activity on campus, became a symbol of student protest.",a:"The Free Speech Movement",pts:300},
-      {q:"The New Left criticized this term — referring to the bland conformity, consumer culture, and Cold War consensus of 1950s American life.",a:"The Establishment",pts:400},
-      {q:"At this 1968 event, clashes between police and anti-war demonstrators were broadcast live on television, shocking the nation.",a:"The Democratic National Convention in Chicago",pts:500}
-    ]
-  },
-  {
     cat:"Counterculture",
     qs:[
-      {q:"Members of this counterculture subgroup rejected materialism, embraced communal living, and were known as 'flower children.'",a:"Hippies",pts:100},
-      {q:"This massive 1969 music festival in upstate New York became the defining cultural event of the counterculture generation.",a:"Woodstock",pts:200},
-      {q:"This author of 'One Flew Over the Cuckoo's Nest' and his traveling companions popularized LSD across the country in the early 1960s.",a:"Ken Kesey (and the Merry Pranksters)",pts:300},
-      {q:"Name the San Francisco neighborhood that became the capital of hippie culture and the 'Summer of Love' in 1967.",a:"Haight-Ashbury",pts:400},
-      {q:"This Harvard professor, fired for drug experiments, urged the counterculture to 'turn on, tune in, drop out.'",a:"Timothy Leary",pts:500}
-    ]
-  },
-  {
-    cat:"New Feminism",
-    qs:[
-      {q:"Betty Friedan's 1963 book described the 'problem that has no name' — the dissatisfaction felt by educated suburban housewives.",a:"The Feminine Mystique",pts:100},
-      {q:"Founded in 1966 by Betty Friedan and others, this became the leading mainstream women's rights organization of the era.",a:"NOW — National Organization for Women",pts:200},
-      {q:"This 1972 law banned sex discrimination in any federally funded education program, transforming women's college athletics.",a:"Title IX",pts:300},
-      {q:"This proposed constitutional amendment, which passed Congress in 1972 but was never ratified by enough states, would have guaranteed equal rights regardless of sex.",a:"The Equal Rights Amendment (ERA)",pts:400},
-      {q:"This feminist author and activist co-founded Ms. Magazine in 1972 and became one of the most prominent faces of the women's liberation movement.",a:"Gloria Steinem",pts:500}
-    ]
-  },
-  {
-    cat:"Other Civil Rights",
-    qs:[
-      {q:"This 1969 event in New York City — in which patrons of a gay bar fought back against a police raid — is considered the birth of the modern LGBTQ+ rights movement.",a:"The Stonewall Riots",pts:100},
-      {q:"César Chávez co-founded this union to fight for the rights of migrant farmworkers in California.",a:"United Farm Workers (UFW)",pts:200},
-      {q:"In 1973, members of the American Indian Movement occupied this South Dakota town for 71 days to protest broken treaties and federal policy.",a:"Wounded Knee",pts:300},
-      {q:"This Latinx civil rights term, meaning 'the race' or 'the people,' became a rallying cry for Mexican-American identity and political pride in the 1960s–70s.",a:"La Raza",pts:400},
-      {q:"This militant Native American organization, founded in 1968, led protests at Alcatraz Island and Wounded Knee to draw attention to treaty violations.",a:"AIM — American Indian Movement",pts:500}
+      {q:"What was the counterculture movement primarily known for rejecting?",a:"Mainstream American values and materialism.",pts:100},
+      {q:"Which music festival, held in 1969, became a symbol of the counterculture movement?",a:"Woodstock.",pts:200},
+      {q:"Which group of people was central to the counterculture, known for their long hair, unconventional fashion, and opposition to the Vietnam War?",a:"Hippies.",pts:300},
+      {q:"Which drug, widely associated with the counterculture movement, was popularized for its hallucinogenic effects and became a symbol of rebellion in the 1960s?",a:"LSD.",pts:400},
+      {q:"The 'Free Speech Movement' originated at which university in 1964, marking a key moment in the rise of student-led counterculture activism?",a:"University of California, Berkeley.",pts:500}
     ]
   },
   {
     cat:"Key Terms",
     qs:[
-      {q:"This broad term describes the wave of activism in the 1960s–70s in which women, Native Americans, LGBTQ+ people, and Latinx Americans simultaneously fought for equal rights.",a:"The rights revolution (or social movements of the 1960s–70s)",pts:100},
-      {q:"This landmark 1973 Supreme Court decision established a woman's constitutional right to an abortion.",a:"Roe v. Wade",pts:200},
-      {q:"This feminist concept distinguishes the second wave of feminism — focused on full social, economic, and legal equality — from the earlier suffragist movement.",a:"New Feminism (second-wave feminism)",pts:300},
-      {q:"DAILY DOUBLE — This Chicano student organization, founded in 1967, pushed for educational reform, cultural pride, and political power for Mexican-Americans.",a:"MEChA (Movimiento Estudiantil Chicano de Aztlán)",pts:400,dd:true},
-      {q:"This Supreme Court ruling, combined with the women's movement, dramatically changed American society — but also sparked a conservative backlash that energized the New Right.",a:"Roe v. Wade (accept: any ruling that sparked conservative backlash, e.g. ERA debate)",pts:500}
+      {q:"Which law, passed in 1965, aimed to eliminate voting restrictions based on race?",a:"Voting Rights Act of 1965.",pts:100},
+      {q:"What term refers to the government's attempt to 'assimilate' Native Americans by terminating tribal lands and sovereignty in the mid-20th century?",a:"Termination Policy.",pts:200},
+      {q:"Which policy, implemented in the 1950s, required Native Americans to abandon their traditional cultures and integrate into mainstream American society?",a:"Assimilation Policy.",pts:300},
+      {q:"The term 'test or device,' found in the Voting Rights Act, refers to any requirement that could prevent individuals from voting. Name one example of such a test.",a:"Literacy tests.",pts:400},
+      {q:"Which legal case in 1973 resulted in the U.S. Supreme Court legalizing abortion, citing a woman's right to privacy under the Fourteenth Amendment?",a:"Roe v. Wade.",pts:500}
+    ]
+  },
+  {
+    cat:"New Feminism",
+    qs:[
+      {q:"Which 1963 book by Betty Friedan is often credited with sparking the second-wave feminist movement?",a:"The Feminine Mystique.",pts:100},
+      {q:"Which organization, founded in 1966, was dedicated to achieving full equality for women, including support for the Equal Rights Amendment (ERA)?",a:"National Organization for Women (NOW).",pts:200},
+      {q:"What term describes the movement in the 1960s and 1970s advocating for legal and social equality for women, including reproductive rights and workplace equality?",a:"Feminism (or Second-Wave Feminism).",pts:300},
+      {q:"Which legal amendment, first proposed in 1923 and never ratified, aimed to ensure equal rights under the law, regardless of sex?",a:"Equal Rights Amendment (ERA).",pts:400},
+      {q:"Which 1970s movement emphasized sexual liberation and reproductive rights, and was considered an integral part of the New Feminism?",a:"New Feminism (or the Women's Liberation Movement).",pts:500}
+    ]
+  },
+  {
+    cat:"Civil Rights",
+    qs:[
+      {q:"Which event in 1963 helped solidify Dr. Martin Luther King Jr.'s role in the Civil Rights Movement, where he delivered his famous 'I Have a Dream' speech?",a:"March on Washington.",pts:100},
+      {q:"Which 1964 law prohibited discrimination based on race, color, religion, sex, or national origin, outlawing segregation in public places?",a:"Civil Rights Act of 1964.",pts:200},
+      {q:"Which Native American organization, founded in 1944, aimed to protect and preserve Native American culture and promote political rights?",a:"National Congress of American Indians (NCAI).",pts:300},
+      {q:"The 1973 occupation of Wounded Knee was a key event led by which Native American group, fighting for sovereignty and the recognition of treaties?",a:"American Indian Movement (AIM).",pts:400},
+      {q:"Which landmark 1954 Supreme Court case ruled that racial segregation in public schools was unconstitutional, overturning 'separate but equal'?",a:"Brown v. Board of Education.",pts:500}
     ]
   }
 ];
@@ -196,6 +171,7 @@ function adj(team, amt){
 
 function renderBoard(){
   const board = document.getElementById('board');
+  board.style.gridTemplateColumns = 'repeat(4,1fr)';
   board.innerHTML = '';
   DATA.forEach(col=>{
     const h = document.createElement('div');
@@ -231,7 +207,6 @@ function openQ(c,r,key,q,cat){
   document.getElementById('m-q').textContent = q.q;
   document.getElementById('m-ans').textContent = 'Answer: '+q.a;
   document.getElementById('m-ans').classList.remove('show');
-
   const as = document.getElementById('award-section');
   as.innerHTML = `
     <div class="btn-section-label">Award / Deduct Points</div>
@@ -241,7 +216,6 @@ function openQ(c,r,key,q,cat){
     <div class="btn-row">
       ${TEAM_NAMES.map(t=>`<button class="btn-wrong" onclick="award('${t}',false)">-$${q.pts} ${t}</button>`).join('')}
     </div>`;
-
   document.getElementById('overlay').classList.add('show');
 }
 
@@ -257,7 +231,7 @@ function award(team, correct){
 
 function closeModal(){
   document.getElementById('overlay').classList.remove('show');
-  if(used.size===25) showFinal();
+  if(used.size===20) showFinal();
 }
 
 function showFinal(){
